@@ -1,0 +1,23 @@
+body {
+ background-color: white;
+}
+
+.descrip {
+  float: left;
+  width: 50px;
+  height: 100px;
+}
+.scoreBox{
+  float: right;
+  padding-left: 15px;
+  width: 200px;
+  background-color: grey;
+}
+
+.playingField{
+  margin: auto;
+  width: 650px;
+  height: 500px;
+  background-color: grey;
+  clear: both;
+}
