@@ -47,10 +47,11 @@ function circleCollision(x1, y1, r1, x2, y2, r2) {
     .on("drag", dragmove);
 
   function dragmove(d) {
-
     d3.select(this)
     .attr("cx", d3.event.x)
     .attr("cy", d3.event.y);
+
+    detectCollisions();
   }
 
   //create player
@@ -77,13 +78,14 @@ function circleCollision(x1, y1, r1, x2, y2, r2) {
       });
   }
 
-  setInterval(animationLoop, 1000);
-
-  setInterval(function(){
+  function detectCollisions(){
     Game.currentScore++;
 
     d3.select('.score-current')
       .text(Game.currentScore);
+
+    d3.select('.playingField')
+      .style("background-color", "grey");
 
     var x1 = player.attr("cx");
     var y1 = player.attr("cy");
@@ -95,6 +97,10 @@ function circleCollision(x1, y1, r1, x2, y2, r2) {
       var r2 = enemies[i].attr("r");
 
      if(circleCollision(x1, y1, r1, x2, y2, r2)){
+        d3.select('.playingField')
+        .style("background-color", "red");
+
+
       if (Game.currentScore > Game.highScore){
         Game.highScore = Game.currentScore;
         d3.select('.score-high')
@@ -105,7 +111,10 @@ function circleCollision(x1, y1, r1, x2, y2, r2) {
           .text(0);
      }
     }
-  }, 20);
+  }
+
+  setInterval(animationLoop, 1000);
+  setInterval(detectCollisions, 100);
 
 })();
 
