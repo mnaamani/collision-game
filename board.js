@@ -11,7 +11,7 @@ var Game = {
 };
 
 function circleCollision(x1, y1, r1, x2, y2, r2) {
-  return (x2-x1)*(x2-x1) + (y1-y2)*(y1-y2) <= (r1+r2)*(r1+r2);
+  return ((x2-x1)*(x2-x1) + (y1-y2)*(y1-y2)) <= (15+(r1+r2)*(r1+r2)) ;
 }
 //game loop inside a closure
 (function (){
@@ -26,7 +26,7 @@ function circleCollision(x1, y1, r1, x2, y2, r2) {
     .attr("width", Game.width)
     .attr("height", Game.height);
 
-  //generate N enemies in a loop - new Enemy() and push it into the array
+  //generate enemies
   for(var id = 0; id < Game.numberOfEnemies; id++){
     enemies.push(
       board
@@ -38,7 +38,7 @@ function circleCollision(x1, y1, r1, x2, y2, r2) {
           return Game.enemyRadius + (Math.random() * (Game.height - 2 * Game.enemyRadius));
        })
        .attr("r", Game.enemyRadius)
-       .style("fill", "purple")
+       .style("fill", "#00324D")
     );
   }
 
@@ -50,7 +50,6 @@ function circleCollision(x1, y1, r1, x2, y2, r2) {
     d3.select(this)
     .attr("cx", d3.event.x)
     .attr("cy", d3.event.y);
-
     detectCollisions();
   }
 
@@ -61,7 +60,7 @@ function circleCollision(x1, y1, r1, x2, y2, r2) {
     .attr("cy", Game.height /2)
     .attr("rx", Game.enemyRadius /2)
     .attr("ry", Game.enemyRadius /2)
-    .style("fill", "orange")
+    .style("fill", "#76BDE3")
     .call(drag);
 
   //setInterval callback function
@@ -85,7 +84,7 @@ function circleCollision(x1, y1, r1, x2, y2, r2) {
       .text(Game.currentScore);
 
     d3.select('.playingField')
-      .style("background-color", "grey");
+      .style("background-color", "#A0C8C8");
 
     var x1 = player.attr("cx");
     var y1 = player.attr("cy");
@@ -96,25 +95,26 @@ function circleCollision(x1, y1, r1, x2, y2, r2) {
       var y2 = enemies[i].attr("cy");
       var r2 = enemies[i].attr("r");
 
-     if(circleCollision(x1, y1, r1, x2, y2, r2)){
+      if(circleCollision(x1, y1, r1, x2, y2, r2)){
         d3.select('.playingField')
-        .style("background-color", "red");
+        .style("background-color", "#B90059");
 
+        if (Game.currentScore > Game.highScore){
+          Game.highScore = Game.currentScore;
+          d3.select('.score-high').text(Game.highScore);
+        }
 
-      if (Game.currentScore > Game.highScore){
-        Game.highScore = Game.currentScore;
-        d3.select('.score-high')
-          .text(Game.highScore);
-      }
         Game.currentScore = 0;
-         d3.select('.score-current')
-          .text(0);
-     }
+        d3.select('.score-current').text(0);
+
+        return;
+      }
     }
   }
 
   setInterval(animationLoop, 1000);
-  setInterval(detectCollisions, 100);
+
+  d3.timer(detectCollisions);
 
 })();
 
