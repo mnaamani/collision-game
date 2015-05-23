@@ -6,15 +6,20 @@ var Game = {
   height: 500,
   highScore: 0,
   currentScore: 0,
-  numberOfEnemies: 10
+  numberOfEnemies: 10,
+  enemyRadius: 15,
 };
 
 
 function Enemy(id){
-  this.x = Math.random() * 100;
-  this.y = Math.random() * 100;
   this.id = id;
+  this.move();
 }
+
+Enemy.prototype.move = function() {
+  this.x = Game.enemyRadius + (Math.random() * (Game.width - 2 * Game.enemyRadius));
+  this.y = Game.enemyRadius + (Math.random() * (Game.height - 2 * Game.enemyRadius));
+};
 
 function Player(){
 
@@ -22,7 +27,7 @@ function Player(){
 
 
 //game loop inside a closure
-function run(){
+(function (){
 
   //create the enemies (in an array) - enemy data
   var enemies = [];
@@ -37,25 +42,40 @@ function run(){
     .attr("width", Game.width)
     .attr("height", Game.height);
 
-
-  //setInterval callback function
-  function loop(){
-    console.log(enemies);
-
-    //rendering
     board
       .selectAll('circle')
       .data(enemies)
       .enter()
       .append('circle')
-      .attr("cx", 25)
-      .attr("cy", 25)
-      .attr("r", 25)
+      .attr("cx", function(enemy){
+        return enemy.x;
+      })
+      .attr("cy", function(enemy){
+        return enemy.y;
+      })
+      .attr("r", Game.enemyRadius)
       .style("fill", "purple");
+
+  //setInterval callback function
+  function loop(){
+    //loop through each enemy. tell it to update its x and y
+    enemies.forEach(function(enemy){
+      enemy.move();
+    });
+
+    //rendering
+    board
+      .selectAll('circle')
+      .data(enemies)
+      .attr("cx", function(enemy){
+        return enemy.x;
+      })
+      .attr("cy", function(enemy){
+        return enemy.y;
+      });
   }
 
   loop();
-  //setInterval(loop, 100);
-}
+  setInterval(loop, 500);
+})();
 
-run();
