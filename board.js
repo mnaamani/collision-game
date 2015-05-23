@@ -80,6 +80,10 @@ function circleCollision(x1, y1, r1, x2, y2, r2) {
   setInterval(animationLoop, 1000);
 
   setInterval(function(){
+    Game.currentScore++;
+
+    d3.select('.score-current')
+      .text(Game.currentScore);
 
     var x1 = player.attr("cx");
     var y1 = player.attr("cy");
@@ -91,10 +95,15 @@ function circleCollision(x1, y1, r1, x2, y2, r2) {
       var r2 = enemies[i].attr("r");
 
      if(circleCollision(x1, y1, r1, x2, y2, r2)){
-        //
-        console.log("detected collision");
+      if (Game.currentScore > Game.highScore){
+        Game.highScore = Game.currentScore;
+        d3.select('.score-high')
+          .text(Game.highScore);
+      }
+        Game.currentScore = 0;
+         d3.select('.score-current')
+          .text(0);
      }
-
     }
   }, 20);
 
