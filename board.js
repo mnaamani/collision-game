@@ -10,21 +10,6 @@ var Game = {
   enemyRadius: 15,
 };
 
-
-function Enemy(id){
-  this.id = id;
-  this.move();
-}
-
-Enemy.prototype.move = function() {
-  this.x = Game.enemyRadius + (Math.random() * (Game.width - 2 * Game.enemyRadius));
-  this.y = Game.enemyRadius + (Math.random() * (Game.height - 2 * Game.enemyRadius));
-};
-
-function Player(){
-
-}
-
 function circleCollision(x1, y1, r1, x2, y2, r2) {
   return (x2-x1)*(x2-x1) + (y1-y2)*(y1-y2) <= (r1+r2)*(r1+r2);
 }
@@ -35,46 +20,39 @@ function circleCollision(x1, y1, r1, x2, y2, r2) {
   var enemies = [];
   var player;
 
-
-  //generate N enemies in a loop - new Enemy() and push it into the array
-  for(var id = 0; id < Game.numberOfEnemies; id++){
-    enemies.push( new Enemy(id) );
-  }
-
   var board = d3.select("svg");
 
   board
     .attr("width", Game.width)
     .attr("height", Game.height);
 
-  //create enemies
-  board
-    .selectAll('circle')
-    .data(enemies)
-    .enter()
-    .append('circle')
-    .attr("cx", function(enemy){
-      return enemy.x;
-    })
-    .attr("cy", function(enemy){
-      return enemy.y;
-    })
-    .attr("r", Game.enemyRadius)
-    .style("fill", "purple");
-
+  //generate N enemies in a loop - new Enemy() and push it into the array
+  for(var id = 0; id < Game.numberOfEnemies; id++){
+    enemies.push(
+      board
+       .append('circle')
+       .attr('cx', function(){
+          return Game.enemyRadius + (Math.random() * (Game.width - 2 * Game.enemyRadius));
+       })
+       .attr('cy', function(){
+          return Game.enemyRadius + (Math.random() * (Game.height - 2 * Game.enemyRadius));
+       })
+       .attr("r", Game.enemyRadius)
+       .style("fill", "purple")
+    );
+  }
 
   //drag feature
   var drag = d3.behavior.drag()
     .on("drag", dragmove);
 
   function dragmove(d) {
-    //console.log("drag event fired:", d, d3.event.x, d3.event.y);
 
     d3.select(this)
     .attr("cx", d3.event.x)
     .attr("cy", d3.event.y);
-    //d3.select(this).attr("transform", "translate(" + x + "," + y + ")");
   }
+
   //create player
   player = board
     .append('ellipse')
@@ -87,22 +65,15 @@ function circleCollision(x1, y1, r1, x2, y2, r2) {
 
   //setInterval callback function
   function animationLoop(){
-    //loop through each enemy. tell it to update its x and y
-    enemies.forEach(function(enemy){
-      enemy.move();
-    });
-
-    player.style("fill","orange");
-
     //rendering
     board
       .selectAll('circle')
       .transition().duration(1000)
-      .attr("cx", function(enemy){
-        return enemy.x;
+      .attr('cx', function(){
+          return Game.enemyRadius + (Math.random() * (Game.width - 2 * Game.enemyRadius));
       })
-      .attr("cy", function(enemy){
-        return enemy.y;
+      .attr('cy', function(){
+          return Game.enemyRadius + (Math.random() * (Game.height - 2 * Game.enemyRadius));
       });
   }
 
@@ -110,16 +81,22 @@ function circleCollision(x1, y1, r1, x2, y2, r2) {
 
   setInterval(function(){
 
-    board
-      .selectAll('circle').each(function(circles){
-        circles.each(function(){
-          circle.getAttribute("cx");
-          circle.getAttribute("cy");
-          circle.getAttribute("r");
-        });
-      });
+    var x1 = player.attr("cx");
+    var y1 = player.attr("cy");
+    var r1 = player.attr("rx");
 
-  }, 800);
+    for(var i = 0; i < enemies.length; i++){
+      var x2 = enemies[i].attr("cx");
+      var y2 = enemies[i].attr("cy");
+      var r2 = enemies[i].attr("r");
+
+     if(circleCollision(x1, y1, r1, x2, y2, r2)){
+        //
+        console.log("detected collision");
+     }
+
+    }
+  }, 20);
 
 })();
 
