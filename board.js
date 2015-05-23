@@ -25,13 +25,15 @@ function Player(){
 
 }
 
-
+function circleCollision(x1, y1, r1, x2, y2, r2) {
+  return (x2-x1)*(x2-x1) + (y1-y2)*(y1-y2) <= (r1+r2)*(r1+r2);
+}
 //game loop inside a closure
 (function (){
 
   //create the enemies (in an array) - enemy data
   var enemies = [];
-  var player = [];
+  var player;
 
 
   //generate N enemies in a loop - new Enemy() and push it into the array
@@ -74,7 +76,7 @@ function Player(){
     //d3.select(this).attr("transform", "translate(" + x + "," + y + ")");
   }
   //create player
-  board
+  player = board
     .append('ellipse')
     .attr("cx", Game.width /2)
     .attr("cy", Game.height /2)
@@ -90,25 +92,34 @@ function Player(){
       enemy.move();
     });
 
+    player.style("fill","orange");
+
     //rendering
     board
       .selectAll('circle')
-      .data(enemies)
       .transition().duration(1000)
-       .attr("cx", function(enemy){
+      .attr("cx", function(enemy){
         return enemy.x;
-        })
-        .attr("cy", function(enemy){
+      })
+      .attr("cy", function(enemy){
         return enemy.y;
       });
   }
 
   setInterval(animationLoop, 1000);
 
-  //collision detection loop
   setInterval(function(){
 
-  }, 500);
+    board
+      .selectAll('circle').each(function(circles){
+        circles.each(function(){
+          circle.getAttribute("cx");
+          circle.getAttribute("cy");
+          circle.getAttribute("r");
+        });
+      });
+
+  }, 800);
 
 })();
 
