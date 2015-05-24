@@ -4,6 +4,7 @@
 var Game = {
   width: 650,
   height: 500,
+  level: 0,
   highScore: 0,
   currentScore: 0,
   numberOfEnemies: 10,
@@ -26,8 +27,7 @@ function circleCollision(x1, y1, r1, x2, y2, r2) {
     .attr("width", Game.width)
     .attr("height", Game.height);
 
-  //generate enemies
-  for(var id = 0; id < Game.numberOfEnemies; id++){
+  var makeEnemy = function(color){
     enemies.push(
       board
        .append('circle')
@@ -38,8 +38,12 @@ function circleCollision(x1, y1, r1, x2, y2, r2) {
           return Game.enemyRadius + (Math.random() * (Game.height - 2 * Game.enemyRadius));
        })
        .attr("r", Game.enemyRadius)
-       .style("fill", "#00324D")
+       .style("fill", color || "#00324D")
     );
+  }
+  //generate enemies
+  for(var id = 0; id < Game.numberOfEnemies; id++){
+    makeEnemy();
   }
 
   //drag feature
@@ -104,8 +108,17 @@ function circleCollision(x1, y1, r1, x2, y2, r2) {
           d3.select('.score-high').text(Game.highScore);
         }
 
+
         Game.currentScore = 0;
+        Game.enemyRadius = 15;
+        Game.level = 0;
         d3.select('.score-current').text(0);
+        d3.select('.level').text("Collision! Enemies are reset.");
+
+        var enemiesToRemove = enemies.splice(9);
+        enemiesToRemove.forEach(function(enemy){
+          enemy.remove();
+        });
 
         return;
       }
@@ -115,6 +128,22 @@ function circleCollision(x1, y1, r1, x2, y2, r2) {
   setInterval(animationLoop, 1000);
 
   d3.timer(detectCollisions);
+
+  setInterval(function levels (){
+    Game.numberOfEnemies++;
+    Game.level++;
+    d3.select('.level')
+    .text("Level " + Game.level + ": One more enemy added");
+    makeEnemy();
+  }, 4000);
+
+   setInterval(function levels2 (){
+    Game.level++;
+    Game.enemyRadius += 5;
+    d3.select('.level')
+      .text("Level " + Game.level + ": Enemies getting bigger");
+    makeEnemy();
+  }, 8000);
 
 })();
 
