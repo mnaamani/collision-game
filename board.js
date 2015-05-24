@@ -51,9 +51,15 @@ function circleCollision(x1, y1, r1, x2, y2, r2) {
     .on("drag", dragmove);
 
   function dragmove(d) {
+
+    var x = d3.event.x > Game.width ? Game.width - (Game.enemyRadius /2) : d3.event.x;
+    var y = d3.event.y > Game.height ? Game.height - (Game.enemyRadius /2) : d3.event.y;
+    x = x < 0 ? (Game.enemyRadius /2) : x;
+    y = y < 0 ? (Game.enemyRadius /2) : y;
+
     d3.select(this)
-    .attr("cx", d3.event.x)
-    .attr("cy", d3.event.y);
+    .attr("cx", x)
+    .attr("cy", y);
     detectCollisions();
   }
 
